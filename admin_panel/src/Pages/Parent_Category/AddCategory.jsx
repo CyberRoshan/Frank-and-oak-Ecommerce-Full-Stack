@@ -187,7 +187,7 @@ export default function AddCategory() {
     file:me-4
     file:py-3 file:px-4
     "
-                      required
+                      
                     />
                   </div>
                 </div>

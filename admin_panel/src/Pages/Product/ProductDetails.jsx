@@ -1,7 +1,31 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Breadcrumb from '../../common/Breadcrumb'
+import axios from 'axios'
+import { AdminBaseURL } from '../../config/config'
 
 export default function ProductDetails() {
+  let [sizeData,setSizeData]=useState([])
+  let [colorData,setColorData]=useState([])
+  let [parentCatData,setParentCatData]=useState([])
+  useEffect(()=>{
+    axios.get(AdminBaseURL+"/sub-category/parent-category").then((res)=>{
+      if(res.data.status){
+        setParentCatData(res.data.datalist)
+      }
+    })
+    
+    axios.get(AdminBaseURL+"/product/size-view").then((res)=>{
+      if(res.data.status){
+        setSizeData(res.data.datalist)
+      }
+    })
+
+    axios.get(AdminBaseURL+"/product/color-view").then((res)=>{
+      if(res.data.status){
+        setColorData(res.data.datalist)
+      }
+    })
+  },[])
   return (
     <section className="w-full">
 
@@ -152,13 +176,14 @@ export default function ProductDetails() {
 
                   <select
                     id="default"
-                    name='parentCatSelectBox'
+                    name='productParentCatId'
                     className=" border-2 border-gray-300 text-gray-900 mb-6 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   >
                     <option selected>--Select Parent Category--</option>
-                    <option value="Mens">Men's</option>
-                    <option value="Women">Women</option>
-                    <option value="Sale">Sale</option>
+                    {parentCatData.map((item,index)=>{
+                      return <option key={index} value={item._id}>{item.categoryName}</option>
+                    })}
+                 
                   </select>
                 </div>
             <div className="mb-5">
@@ -185,28 +210,28 @@ export default function ProductDetails() {
           <label className="block mb-5 text-md font-medium text-gray-900">Size</label>
           <select
                     id="default"
-                    name='pdSizeSelectBox'
+                    name='productSizeId'
                     className=" border-2 border-gray-300 text-gray-900 mb-6 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   >
                     <option selected>--Select Size--</option>
-                    <option value="tShirt">S</option>
-                    <option value="Shirt">M</option>
-                    <option value="Shirt">L</option>
-                    <option value="Shirt">XL</option>
-                    <option value="Shirt">XXL</option>
+                    {
+                      sizeData.map((item,index)=>{
+                        return <option key={index} value={item._id}>{item.sizeName}</option>
+                      })
+                    }
                   </select>
           </div>
           <div>
           <label className="block mb-5 text-md font-medium text-gray-900">Color</label>
           <select
                     id="default"
-                    name='pdColorSelectBox'
+                    name='productColorId'
                     className=" border-2 border-gray-300 text-gray-900 mb-6 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   >
                     <option selected>--Select Color--</option>
-                    <option value="tShirt">Red</option>
-                    <option value="Shirt">Black</option>
-                    <option value="Shirt">Orange</option>
+                    {colorData.map((item,index)=>{
+                     return <option key={index} value={item._id}>{item.colorName}</option> 
+                    })}
                   </select>
           </div>
           </div>

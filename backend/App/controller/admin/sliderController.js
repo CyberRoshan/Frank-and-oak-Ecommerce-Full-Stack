@@ -43,7 +43,7 @@ let sliderView = async (req, res) => {
   if(sliderHeading!==""){
     searchObject['sliderHeading']=new RegExp(sliderHeading,"i")
   }
-  const sliderData = await sliderModal.find(searchObject);
+  const sliderData = await sliderModal.find(searchObject)
   let response = {
     status: 1,
     path: process.env.SLIDER_STATIC_PATH,

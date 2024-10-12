@@ -249,7 +249,7 @@ export default function ViewColor() {
                 colorData.map((item,index)=>(
                     <tr key={index} className="bg-white border-b ">
                     <th scope="row" className="px-6 py-4 text-[18px] font-semibold text-gray-900 whitespace-nowrap ">
-                    <input name='deleteCheck' onChange={getAllCheckedID} value={item._id} id="purple-checkbox" type="checkbox" className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 "/>
+                    <input name='deleteCheck' onChange={getAllCheckedID} value={item._id} checked={allCheckedId.includes(item._id) ? true : ""} id="purple-checkbox" type="checkbox" className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 "/>
                     </th>
                     <td className="px-6 py-4">
                         {item.colorName}

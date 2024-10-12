@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import Home from "./Home.jsx";
 import 'sweetalert2/src/sweetalert2.scss'
+import 'react-responsive-pagination/themes/bootstrap.css';
 import {
   createBrowserRouter,
   createRoutesFromElements,

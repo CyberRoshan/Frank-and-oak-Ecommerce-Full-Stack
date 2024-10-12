@@ -35,19 +35,25 @@ let categoryInsert = async (req, res) => {
 
 let categoryView = async (req, res) => {
   let searchObject = {};
-  let { catName, catDesc } = req.query;
-  console.log(req.query);
+  let { catName, catDesc , pageNumber } = req.query;
+  let limit=5;
+  // console.log(req.query);
   if (catName !== "") {
     searchObject["categoryName"] = new RegExp(catName, "i");
   }
   if (catDesc !== "") {
     searchObject["categoryDescription"] = new RegExp(catDesc, "i");
   }
-  const categoryData = await categoryModel.find(searchObject);
+  const categoryData = await categoryModel.find(searchObject).skip((pageNumber-1)*limit).limit(limit);
+  
+  const totalPageNumber=await categoryModel.find(searchObject)
+  let allPage=Math.ceil(totalPageNumber.length/limit)
   let response = {
     status: 1,
     path: process.env.CATEGORY_STATIC_PATH,
     dataList: categoryData,
+    allPage,
+    limit
   };
   res.status(200).json(response);
 };

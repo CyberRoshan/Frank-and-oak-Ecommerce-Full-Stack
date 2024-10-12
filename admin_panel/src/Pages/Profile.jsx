@@ -31,6 +31,52 @@ export default function Profile() {
                       placeholder="Enter your name"
                     />
                   </div>
+                  <div className="mb-5">
+                    <label
+                      htmlFor="base-input2"
+                      className="block mb-5 text-md font-medium text-gray-900"
+                    >
+                      Email
+                    </label>
+                    <input
+                      name="userEmail"
+                      type="email"
+                      id="base-input2"
+                      className="text-[19px] border-2 shadow-sm border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 px-3 "
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                  <div className="mb-5">
+                    <label
+                      htmlFor="base-input3"
+                      className="block mb-5 text-md font-medium text-gray-900"
+                    >
+                      Phone
+                    </label>
+                    <input
+                      name="userPhone"
+                      type="tel"
+                      id="base-input3"
+                      className="text-[19px] border-2 shadow-sm border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 px-3 "
+                      placeholder="Enter your phone"
+                    />
+                  </div>
+                  <div className="mb-5">
+                    <label
+                      htmlFor="base-input4"
+                      className="block mb-5 text-md font-medium text-gray-900"
+                    >
+                      Address
+                    </label>
+                    {/* <input
+                      name="userPhone"
+                      type="tel"
+                      id="base-input3"
+                      className="text-[19px] border-2 shadow-sm border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 px-3 "
+                      placeholder="Enter your phone"
+                    /> */}
+                    <textarea name="userAddress" id="base-input4" rows={4} className="resize-none text-[19px] border-2 shadow-sm border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 px-3 " placeholder="Enter your address"></textarea>
+                  </div>
                   <br />
                   <div>
                     <label

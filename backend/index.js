@@ -11,6 +11,7 @@ app.use(express.json())
 app.use(mainRoute)
 app.use("/uploads/category", express.static("uploads/category"))
 app.use("/uploads/slider", express.static("uploads/slider"))
+app.use("/uploads/subCategory", express.static("uploads/subCategory"))
 
 
 mongoose.connect(`mongodb://127.0.0.1:27017/${process.env.DB_NAME}`)

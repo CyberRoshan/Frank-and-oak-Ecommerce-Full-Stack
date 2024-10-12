@@ -5,23 +5,31 @@ import axios from "axios";
 import { AdminBaseURL } from "../../config/config";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { Link } from "react-router-dom";
+import ResponsivePagination from "react-responsive-pagination";
 
 export default function ViewCategory() {
+  let [currentPage, setCurrentPage] = useState(1);
+  let [totalPages,setTotalPage]=useState(0);
   let [categoryData, setCategoryData] = useState([]);
   let [searchData, setSearchData] = useState({
     catName: "",
     catDesc: "",
+    pageNumber:1
   });
   let [path, setPath] = useState("");
   let [allCheckedId, setAllCheckedId] = useState([]);
+  let limit=5;
 
   let viewCategory = () => {
+    let obj={...searchData}
+    obj['pageNumber']=currentPage
     axios
-      .get(AdminBaseURL + "/category/view", { params: searchData })
+      .get(AdminBaseURL + "/category/view", { params: obj })
       .then((res) => {
         if (res.data.status == 1) {
           setCategoryData(res.data.dataList);
           setPath(res.data.path);
+          setTotalPage(res.data.allPage)
         }
       });
   };
@@ -156,6 +164,9 @@ export default function ViewCategory() {
   useEffect(() => {
     viewCategory();
   }, [searchData]);
+  useEffect(()=>{
+    viewCategory()
+  },[currentPage])
   return (
     <section className="w-full">
       <Breadcrumb
@@ -263,10 +274,11 @@ export default function ViewCategory() {
                             type="checkbox"
                             onChange={getAllCheckedID}
                             value={item._id}
+                            checked={ allCheckedId.includes(item._id) ? true : '' }
                             className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 "
                           />
                         </th>
-                        <td className="px-6 py-4">{index + 1}</td>
+                        <td className="px-6 py-4">{(currentPage-1)*limit+(index + 1)}</td>
                         <td className="px-6 py-4">{item.categoryName}</td>
                         <td className="px-6 py-4">
                           <img
@@ -324,6 +336,13 @@ export default function ViewCategory() {
                   )}
                 </tbody>
               </table>
+              <div className="py-5">
+                <ResponsivePagination
+                  current={currentPage}
+                  total={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
             </div>
           </div>
         </div>
