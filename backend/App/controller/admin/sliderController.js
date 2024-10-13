@@ -35,19 +35,24 @@ let sliderInsert = async (req, res) => {
 };
 
 let sliderView = async (req, res) => {
-  let {sliderName,sliderHeading}=req.query
+  let {sliderName,sliderHeading, pageNumber}=req.query
   let searchObject={}
+  let limit=5
   if(sliderName!==""){
     searchObject['sliderName']=new RegExp(sliderName,"i")
   }
   if(sliderHeading!==""){
     searchObject['sliderHeading']=new RegExp(sliderHeading,"i")
   }
-  const sliderData = await sliderModal.find(searchObject)
+  const sliderData = await sliderModal.find(searchObject).skip((pageNumber-1)*limit).limit(limit)
+  const totalPageNumber=await sliderModal.find(searchObject)
+  let allPage=Math.ceil(totalPageNumber.length/limit)
   let response = {
     status: 1,
     path: process.env.SLIDER_STATIC_PATH,
     dataList: sliderData,
+    allPage,
+    limit
   };
   res.status(200).json(response);
 };

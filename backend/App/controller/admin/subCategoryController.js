@@ -48,14 +48,25 @@ let subCategoryInsert = async (req, res) => {
 };
 
 let subCategoryView = async (req, res) => {
+  let searchObject={}
+  let limit=5;
   try {
-    let subCategoryData = await subcategoryModel
-      .find()
-      .populate("parentCategoryId", "categoryName");
+    let {subCatName,subCatDesc, pageNumber}=req.query
+    if(subCatName!==""){
+      searchObject['subCatName']=new RegExp(subCatName,"i")
+    }
+    if(subCatDesc!==""){
+      searchObject['subCatDesc']=new RegExp(subCatDesc,"i")
+    }
+    let subCategoryData = await subcategoryModel.find(searchObject).skip((pageNumber-1)*limit).limit(limit).populate("parentCategoryId", "categoryName");
+    let totalPageNumber=await subcategoryModel.find(searchObject)
+    let allPage=Math.ceil(totalPageNumber.length/limit)
     res.status(200).json({
       status: 1,
       path:process.env.SUBCATEGORY_STATIC_PATH,
       datalist: subCategoryData,
+      allPage,
+      limit
     });
   } catch (error) {
     res.status(500).json({

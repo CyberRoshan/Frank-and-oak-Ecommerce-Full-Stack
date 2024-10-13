@@ -1,24 +1,28 @@
 import React, { useEffect, useState } from 'react'
-import Sidebar from '../../common/Sidebar'
-import Header from '../../common/Header'
 import Breadcrumb from '../../common/Breadcrumb'
-import Footer from '../../common/Footer'
 import axios from 'axios'
 import { AdminBaseURL } from '../../config/config'
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { Link } from 'react-router-dom'
+import ResponsivePagination from 'react-responsive-pagination';
 
 export default function ViewSize() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages,setTotalPages] =useState(0);
     let [allCheckedId,setAllCheckedId]=useState([])
     let [sizeData,setSizeData]=useState([])
     let [searchData,setSearchData]=useState({
-      sizeName:""
+      sizeName:"",
+      pageNumber:1
     })
     let viewSize=()=>{
-        axios.get(AdminBaseURL+"/size/view",{params:searchData})
+      let obj={...searchData}
+      obj['pageNumber']=currentPage
+        axios.get(AdminBaseURL+"/size/view",{params:obj})
         .then((res)=>{
             if(res.data.status==1){
                 setSizeData(res.data.dataList)
+                setTotalPages(res.data.allPage)
                 console.log(res.data.dataList)
             }
         })
@@ -157,6 +161,9 @@ export default function ViewSize() {
     useEffect(()=>{
       viewSize()
     },[searchData])
+    useEffect(()=>{
+      viewSize()
+    },[currentPage])
   return (
     <>
         <Breadcrumb path={"Size"} path2={"View Size"} slash={"/"} />
@@ -254,6 +261,13 @@ export default function ViewSize() {
             }
         </tbody>
     </table>
+    <div className='py-5'>
+    <ResponsivePagination
+      current={currentPage}
+      total={totalPages}
+      onPageChange={setCurrentPage}
+    />
+    </div>
 </div>
 
             </div>

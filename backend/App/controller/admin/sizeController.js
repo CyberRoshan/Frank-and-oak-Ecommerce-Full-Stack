@@ -26,14 +26,18 @@ let sizeInsert = async (req, res) => {
 
 let sizeView = async (req, res) => {
   let searchObject={}
-  let {sizeName}=req.query
+  let limit=5
+  let {sizeName, pageNumber}=req.query
   if(sizeName!==""){
     searchObject['sizeName']=new RegExp(sizeName,"i")
   }
-  const sizeData = await sizeModal.find(searchObject);
+  const sizeData = await sizeModal.find(searchObject).skip((pageNumber-1)*limit).limit(limit);
+  const totalPageNumber=await sizeModal.find(searchObject)
+  let allPage=Math.ceil(totalPageNumber.length/limit)
   let response = {
     status: 1,
     dataList: sizeData,
+    allPage
   };
   res.status(200).json(response);
 };

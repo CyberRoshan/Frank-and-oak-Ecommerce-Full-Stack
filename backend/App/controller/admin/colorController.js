@@ -28,17 +28,21 @@ let colorInsert = async (req, res) => {
 
 let colorView = async (req, res) => {
   let searchObject={}
-  let {colorName,colorCode}=req.query
+  let limit=5
+  let {colorName,colorCode,pageNumber}=req.query
   if(colorName!==""){
     searchObject['colorName']=new RegExp(colorName,"i")
   }
   if(colorCode!==""){
     searchObject['colorCode']=new RegExp(colorCode,"i")
   }
-  const colorData = await colorModal.find(searchObject);
+  const colorData = await colorModal.find(searchObject).skip((pageNumber-1)*limit).limit(limit);
+  const totalPageNumber=await colorModal.find(searchObject)
+  let allPage=Math.ceil(totalPageNumber.length/limit)
   let response = {
     status: 1,
     dataList: colorData,
+    allPage,
   };
   res.status(200).json(response);
 };

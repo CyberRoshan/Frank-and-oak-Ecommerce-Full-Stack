@@ -4,21 +4,30 @@ import axios, { all } from 'axios'
 import { AdminBaseURL } from '../../config/config'
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { Link } from 'react-router-dom';
+import ResponsivePagination from 'react-responsive-pagination';
 
 export default function SliderView() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages,setTotalPages] = useState(0);
+  const [limit,setLimit]=useState(0)
     let [allCheckedId,setAllCheckedId]=useState([])
     let [sliderData,setSliderData]=useState([])
     let [searchData,setSearchData]=useState({
       sliderName:"",
-      sliderHeading:""
+      sliderHeading:"",
+      pageNumber:1
     })
     let [path,setPath]=useState("")
     let viewSlider=()=>{
-        axios.get(AdminBaseURL+"/slider/view",{params:searchData})
+      let obj={...searchData}
+      obj['pageNumber']=currentPage
+        axios.get(AdminBaseURL+"/slider/view",{params:obj})
         .then((res)=>{
             if(res.data.status==1){
                 setSliderData(res.data.dataList)
                 setPath(res.data.path)
+                setTotalPages(res.data.allPage)
+                setLimit(res.data.limit)
                 console.log(res.data)
             }
         })
@@ -158,6 +167,9 @@ export default function SliderView() {
     useEffect(()=>{
       viewSlider()
     },[searchData])
+    useEffect(()=>{
+      viewSlider()
+    },[currentPage])
   return (
     <section className="w-full">
         <Breadcrumb path={"Slider"} path2={"Slider View"} slash={"/"} />
@@ -256,7 +268,7 @@ export default function SliderView() {
                 <input onChange={getAllCheckedId} value={item._id} checked={allCheckedId.includes(item._id) ? true : ""} name='deleteCheck' id="purple-checkbox" type="checkbox" className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 "/>
                 </th>
                 <td className="px-6 py-4 font-bold">
-                    {index+1}
+                    {(currentPage-1)*limit+(index+1)}
                 </td>
                 <td className="px-6 py-4">
                     {item.sliderName}
@@ -291,6 +303,14 @@ export default function SliderView() {
             }
         </tbody>
     </table>
+
+    <div className='py-5'>
+    <ResponsivePagination
+      current={currentPage}
+      total={totalPages}
+      onPageChange={setCurrentPage}
+    />
+    </div>
 </div>
 
             </div>

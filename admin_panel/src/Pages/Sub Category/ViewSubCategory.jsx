@@ -2,27 +2,106 @@ import React, { useEffect, useState } from 'react'
 import Breadcrumb from '../../common/Breadcrumb'
 import axios from 'axios'
 import { AdminBaseURL } from '../../config/config'
+import ResponsivePagination from 'react-responsive-pagination';
 
 export default function ViewSubCategory() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages,setTotalPages] = useState(0);
+  const [limit,setLimit]=useState(0)
     let [subCatData,setSubcatData]=useState([])
     let [path,setPath]=useState("")
+    let [searchData,setSearchData]=useState({
+        subCatName:"",
+        subCatDesc:"",
+        pageNumber:1
+    })
     let viewSubCategory=()=>{
-        axios.get(AdminBaseURL+"/sub-category/view")
+      let obj={...searchData}
+      obj['pageNumber']=currentPage
+        axios.get(AdminBaseURL+"/sub-category/view",{
+            params:obj
+        })
         .then((res)=>{
             if(res.data.status){
                 setSubcatData(res.data.datalist)
                 setPath(res.data.path)
+                setTotalPages(res.data.allPage)
+                setLimit(res.data.limit)
             }
         })
+    }
+
+    let submitSearchForm=(event)=>{
+        event.preventDefault()
+        viewSubCategory()
+    }
+
+    let getSearchData=(event)=>{
+        let oldSearchedData={...searchData}
+        oldSearchedData[event.target.name]=event.target.value
+        setSearchData(oldSearchedData)
     }
     useEffect(()=>{
        viewSubCategory()
     },[])
+    useEffect(()=>{
+        viewSubCategory()
+    },[searchData])
+    useEffect(()=>{
+      viewSubCategory()
+    },[currentPage])
   return (
     <section className="w-full">
         <Breadcrumb path={"Sub Category"} path2={"View Sub Category"} slash={"/"} />
         <div className="w-full min-h-[610px]">
           <div className="max-w-[1220px] mx-auto py-5">
+          <form
+          onSubmit={submitSearchForm}
+            className="grid grid-cols-3 gap-3 items-baseline py-3"
+          >
+            <div class="relative">
+              <input
+                type="text"
+                id="small_outlined"
+                name="subCatName"
+                value={searchData.subCatName}
+                onChange={getSearchData}
+                class="block border-2 font-semibold px-2.5 py-3 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                placeholder=" "
+              />
+              <label
+                for="small_outlined"
+                class="absolute text-sm text-gray-500  duration-300 transform -translate-y-3 scale-75 top-1 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-1 peer-focus:scale-75 peer-focus:-translate-y-3 start-1 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
+              >
+                Search by Sub category Name
+              </label>
+            </div>
+            <div class="relative">
+              <input
+                type="text"
+                id="small_outlined2"
+                name="subCatDesc"
+                onChange={getSearchData}
+                value={searchData.subCatDesc}
+                class="block border-2 font-semibold px-2.5 py-3 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                placeholder=" "
+              />
+              <label
+                for="small_outlined2"
+                class="absolute text-sm text-gray-500  duration-300 transform -translate-y-3 scale-75 top-1 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-1 peer-focus:scale-75 peer-focus:-translate-y-3 start-1 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto"
+              >
+                Search by Sub category Description
+              </label>
+            </div>
+            <div className="grid-cols-2">
+              <button
+                type="button"
+                class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-3 text-center me-2 mb-2"
+              >
+                Search
+              </button>
+            </div>
+          </form>
             <h3 className="text-[26px] font-semibold bg-slate-100 py-3 px-4 rounded-t-md border border-slate-400">
               View Sub Category
             </h3>
@@ -64,7 +143,7 @@ export default function ViewSubCategory() {
                 <input name='deleteCheck' id="purple-checkbox" type="checkbox" value="" className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 "/>
                 </th>
                 <td className="px-6 py-4">
-                    {index+1}
+                    {(currentPage-1)*limit+(index+1)}
                 </td>
                 <td className="px-6 py-4">
                     {item.subCategoryName}
@@ -95,6 +174,13 @@ export default function ViewSubCategory() {
             }
         </tbody>
     </table>
+    <div className='py-5'>
+    <ResponsivePagination
+      current={currentPage}
+      total={totalPages}
+      onPageChange={setCurrentPage}
+    />
+    </div>
 </div>
 
             </div>

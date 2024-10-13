@@ -4,19 +4,26 @@ import axios from 'axios'
 import { AdminBaseURL } from '../../config/config'
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { Link } from 'react-router-dom';
+import ResponsivePagination from 'react-responsive-pagination';
 
 export default function ViewColor() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages,setTotalPages] = useState(0);
     let [allCheckedId,setAllCheckedId]=useState([])
     let [colorData,setColorData]=useState([])
     let [searchData,setSearchData]=useState({
       colorName:"",
-      colorCode:""
+      colorCode:"",
+      pageNumber:1
     })
     let viewColor=()=>{
-        axios.get(AdminBaseURL+"/color/view",{params: searchData})
+      let obj={...searchData}
+      obj['pageNumber']=currentPage
+        axios.get(AdminBaseURL+"/color/view",{params: obj})
         .then((res)=>{
             if(res.data.status==1){
                 setColorData(res.data.dataList)
+                setTotalPages(res.data.allPage)
                 console.log(res.data)
             }
         })
@@ -158,6 +165,9 @@ export default function ViewColor() {
     useEffect(()=>{
       viewColor()
     },[searchData])
+    useEffect(()=>{
+      viewColor()
+    },[currentPage])
     return (
     <>
     <Breadcrumb path={"Colors"} path2={"View Color"} slash={"/"} />
@@ -277,6 +287,13 @@ export default function ViewColor() {
             }
         </tbody>
     </table>
+    <div className='py-5'>
+    <ResponsivePagination
+      current={currentPage}
+      total={totalPages}
+      onPageChange={setCurrentPage}
+    />
+    </div>
 </div>
 
             </div>
