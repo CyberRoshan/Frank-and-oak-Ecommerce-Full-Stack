@@ -1,6 +1,6 @@
 const { categoryModel } = require("../../modal/admin/categoryModal");
 const { subcategoryModel } = require("../../modal/admin/subCategoryModal");
-
+const fs = require("fs");
 let parentCategoryView = async (req, res) => {
   try {
     let categoryData = await categoryModel.find({ categoryStatus: 1 });
@@ -48,25 +48,29 @@ let subCategoryInsert = async (req, res) => {
 };
 
 let subCategoryView = async (req, res) => {
-  let searchObject={}
-  let limit=5;
+  let searchObject = {};
+  let limit = 5;
   try {
-    let {subCatName,subCatDesc, pageNumber}=req.query
-    if(subCatName!==""){
-      searchObject['subCatName']=new RegExp(subCatName,"i")
+    let { subCatName, subCatDesc, pageNumber } = req.query;
+    if (subCatName !== "") {
+      searchObject["subCatName"] = new RegExp(subCatName, "i");
     }
-    if(subCatDesc!==""){
-      searchObject['subCatDesc']=new RegExp(subCatDesc,"i")
+    if (subCatDesc !== "") {
+      searchObject["subCatDesc"] = new RegExp(subCatDesc, "i");
     }
-    let subCategoryData = await subcategoryModel.find(searchObject).skip((pageNumber-1)*limit).limit(limit).populate("parentCategoryId", "categoryName");
-    let totalPageNumber=await subcategoryModel.find(searchObject)
-    let allPage=Math.ceil(totalPageNumber.length/limit)
+    let subCategoryData = await subcategoryModel
+      .find(searchObject)
+      .skip((pageNumber - 1) * limit)
+      .limit(limit)
+      .populate("parentCategoryId", "categoryName");
+    let totalPageNumber = await subcategoryModel.find(searchObject);
+    let allPage = Math.ceil(totalPageNumber.length / limit);
     res.status(200).json({
       status: 1,
-      path:process.env.SUBCATEGORY_STATIC_PATH,
+      path: process.env.SUBCATEGORY_STATIC_PATH,
       datalist: subCategoryData,
       allPage,
-      limit
+      limit,
     });
   } catch (error) {
     res.status(500).json({
@@ -77,4 +81,74 @@ let subCategoryView = async (req, res) => {
   }
 };
 
-module.exports = { subCategoryInsert, parentCategoryView, subCategoryView };
+let subCategorySingleDelete = async (req, res) => {
+  try {
+    let { id } = req.params;
+    const subCategoryData = await subcategoryModel.findOne({ _id: id });
+    if (subCategoryData) {
+      let imageName = await subCategoryData.subCategoryImage;
+      let path = "uploads/subCategory/" + imageName;
+      fs.unlinkSync(path);
+      let singleRowDelete = await subcategoryModel.deleteOne({ _id: id });
+      if (singleRowDelete.deletedCount === 0) {
+        return res.status(404).json({
+          status: 0,
+          message: "No record found to delete.",
+        });
+      }
+      res.status(200).json({
+        status: 1,
+        message: "Record deleted.",
+        res: singleRowDelete,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: 0,
+      message: "Internal server error.",
+      error:error.message,
+    });
+  }
+};
+
+let subCategoryMultipleDelete=async (req,res)=>{
+  try{
+  let {ids}=req.body
+  let singleRowDelete;
+  for(let id of ids){
+    const subCategoryData = await subcategoryModel.findOne({ _id: id });
+    if (subCategoryData) {
+      let imageName = await subCategoryData.subCategoryImage;
+      let path = "uploads/subCategory/" + imageName;
+      fs.unlinkSync(path);
+      singleRowDelete = await subcategoryModel.deleteOne({ _id: id });
+      if (singleRowDelete.deletedCount === 0) {
+        return res.status(404).json({
+          status: 0,
+          message: "No record found to delete.",
+        });
+      }
+    }
+  }
+  res.status(200).json({
+    status: 1,
+    message: "Record deleted.",
+    res: singleRowDelete,
+  });
+}
+catch(error){
+  res.status(500).json({
+    status: 0,
+    message: "Internal server error.",
+    error:error.message,
+  });
+}
+}
+
+module.exports = {
+  subCategoryInsert,
+  parentCategoryView,
+  subCategoryView,
+  subCategorySingleDelete,
+  subCategoryMultipleDelete
+};
