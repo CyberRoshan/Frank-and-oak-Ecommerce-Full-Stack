@@ -1,8 +1,5 @@
 import React from "react";
-import Sidebar from "../common/Sidebar";
-import Header from "../common/Header";
 import Breadcrumb from "../common/Breadcrumb";
-import Footer from "../common/Footer";
 
 export default function Profile() {
   return (

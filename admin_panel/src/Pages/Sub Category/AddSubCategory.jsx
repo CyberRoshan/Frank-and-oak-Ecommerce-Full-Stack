@@ -3,10 +3,18 @@ import Breadcrumb from "../../common/Breadcrumb";
 import axios from "axios";
 import { AdminBaseURL } from "../../config/config";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2/dist/sweetalert2.js";
 
 export default function AddSubCategory() {
+  let {id}=useParams()
   let [parentCatData, setParentCatData] = useState([]);
+  let [controlledForm,setControlledForm]=useState({
+    subCategoryName:"",
+    parentCategoryId:"",
+    subcatDescription:"",
+    subCategoryStatus:1
+  })
   let [preview, setPreview] = useState("/assets/no-img.png");
   let [navigatorStatus, setNavigatorStatus] = useState(false);
   useEffect(() => {
@@ -20,9 +28,48 @@ export default function AddSubCategory() {
   let insertData = (event) => {
     event.preventDefault();
     let formDataValue = new FormData(event.target);
-    axios
-      .post(AdminBaseURL + "/sub-category/insert", formDataValue)
-      .then((res) => {
+    if(id!==undefined){
+      const swalWithBootstrapButtons = Swal.mixin({
+        buttonsStyling: true,
+      });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Are you sure?",
+          text: "You want to update the record.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, update it!",
+          cancelButtonText: "No, cancel!",
+          reverseButtons: true,
+          confirmButtonColor: "#F90101",
+          cancelButtonColor: "#0D0D0D",
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            axios.put(AdminBaseURL+`/sub-category/updaterow/${id}`,formDataValue).then((res)=>{
+              if(res.data.status===1){
+                toast.success("Record Updated");
+                event.target.reset();
+                setNavigatorStatus(true);
+              }
+              else{
+                toast.error(`Unable to update record.`)
+              }
+            })
+          } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+          ) {
+            swalWithBootstrapButtons.fire({
+              title: "Cancelled",
+              text: "Record not Updated",
+              icon: "error",
+            });
+          }
+        });
+    }
+    else{
+    axios.post(AdminBaseURL + "/sub-category/insert", formDataValue).then((res) => {
         if (res.data.status) {
           toast.success(`${res.data.res.subCategoryName} sub category added.`);
           setNavigatorStatus(true);
@@ -33,8 +80,35 @@ export default function AddSubCategory() {
           }
         }
       });
+    }
   };
 
+  let getsetValue=(event)=>{
+    let oldData={...controlledForm}
+    oldData[event.target.name]=event.target.value
+    setControlledForm(oldData)
+  }
+
+  useEffect(()=>{
+    setPreview("/assets/no-img.png")
+    setControlledForm({
+      subCategoryName:"",
+    parentCategoryId:"",
+    subcatDescription:"",
+    subCategoryStatus:1
+    })
+    axios.get(AdminBaseURL+`/sub-category/editrow/${id}`)
+    .then((res)=>res.data)
+    .then((finalData)=>{
+      setPreview(finalData.path+finalData.res.subCategoryImage)
+      setControlledForm({
+        subCategoryName:finalData.res.subCategoryName,
+    parentCategoryId:finalData.res.parentCategoryId,
+    subcatDescription:finalData.res.subcatDescription,
+    subCategoryStatus:finalData.res.subCategoryStatus
+      })
+    })
+  },[id])
   let imagePreview = (event) => {
     const file = event.target.files[0];
     if (
@@ -90,6 +164,8 @@ export default function AddSubCategory() {
               <input
                 type="text"
                 name="subCategoryName"
+                value={controlledForm.subCategoryName}
+                onChange={getsetValue}
                 id="base-input"
                 className="text-[19px] border-2 shadow-sm border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 px-3 "
                 placeholder="Category Name"
@@ -107,6 +183,8 @@ export default function AddSubCategory() {
               <select
                 id="default"
                 name="parentCategoryId"
+                value={controlledForm.parentCategoryId}
+                onChange={getsetValue}
                 className=" border-2 border-gray-300 text-gray-900 mb-6 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
               >
                 <option selected>--Select Category--</option>
@@ -165,6 +243,8 @@ export default function AddSubCategory() {
                 id="message"
                 required
                 name="subcatDescription"
+                value={controlledForm.subcatDescription}
+                onChange={getsetValue}
                 rows="3"
                 className=" resize-none block p-2.5 w-full text-sm text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 "
                 placeholder="Add Product Description....."
@@ -179,6 +259,8 @@ export default function AddSubCategory() {
                   name="subCategoryStatus"
                   type="radio"
                   value={1}
+                  onChange={getsetValue}
+                  checked={controlledForm.subCategoryStatus==1}
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 "
                 ></input>
                 Active
@@ -188,6 +270,8 @@ export default function AddSubCategory() {
                   name="subCategoryStatus"
                   type="radio"
                   value={0}
+                  onChange={getsetValue}
+                  checked={controlledForm.subCategoryStatus==0}
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 "
                 ></input>
                 Deactive
@@ -197,7 +281,7 @@ export default function AddSubCategory() {
               type="submit"
               className="focus:outline-none my-10 text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
             >
-              Add Sub Category
+              {id!==undefined ? "Update" : "Add"} Sub Category
             </button>
           </form>
         </div>

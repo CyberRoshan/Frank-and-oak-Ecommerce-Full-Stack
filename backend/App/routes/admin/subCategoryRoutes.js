@@ -1,5 +1,5 @@
 const express=require("express")
-const { subCategoryInsert, parentCategoryView, subCategoryView, subCategorySingleDelete, subCategoryMultipleDelete } = require("../../controller/admin/subCategoryController")
+const { subCategoryInsert, parentCategoryView, subCategoryView, subCategorySingleDelete, subCategoryMultipleDelete, subCategoryEditRowData, subCategoryUpdateRow } = require("../../controller/admin/subCategoryController")
 const { uploads } = require("../../middleware/fileUploadation")
 
 const subCategoryRoute=express.Router()
@@ -9,4 +9,6 @@ subCategoryRoute.post("/insert",uploads("uploads/subCategory").single("subCatego
 subCategoryRoute.get("/view",subCategoryView)
 subCategoryRoute.delete("/delete/:id",subCategorySingleDelete)
 subCategoryRoute.post("/multiple-delete",subCategoryMultipleDelete)
+subCategoryRoute.get("/editrow/:id",subCategoryEditRowData)
+subCategoryRoute.put("/updaterow/:id",uploads("uploads/subCategory").single("subCategoryImage"),subCategoryUpdateRow)
 module.exports={subCategoryRoute}

@@ -1,8 +1,35 @@
-const express=require("express")
-const { sizeView, colorView } = require("../../controller/admin/productController")
+const express = require("express");
+const {
+  sizeView,
+  colorView,
+  categoryView,
+  subcategoryView,
+  productInsert,
+} = require("../../controller/admin/productController");
+const { uploads } = require("../../middleware/fileUploadation")
 
-const productRoute=express.Router()
+const productRoute = express.Router();
 
-productRoute.get("/size-view",sizeView)
-productRoute.get("/color-view",colorView)
-module.exports={productRoute}
+productRoute.post(
+  "/product-insert",
+  uploads("uploads/product").fields([
+    {
+      name: "productImage",
+      maxCount: 1,
+    },
+    {
+      name: "productGallery",
+      maxCount: 10,
+    },
+    {
+      name: "productAnimationImage",
+      maxCount: 1,
+    },
+  ]),
+  productInsert
+);
+productRoute.get("/parentcategory-view", categoryView);
+productRoute.get("/size-view", sizeView);
+productRoute.get("/color-view", colorView);
+productRoute.get("/subcategory-view/:pid", subcategoryView);
+module.exports = { productRoute };
