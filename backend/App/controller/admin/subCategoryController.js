@@ -39,7 +39,7 @@ let subCategoryInsert = async (req, res) => {
       res: subCatRes,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(200).json({
       status: 0,
       message: "sub category already exists !",
       error: error,

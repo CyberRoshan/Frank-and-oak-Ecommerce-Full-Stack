@@ -2,7 +2,8 @@ const express=require("express")
 const cors=require("cors")
 require("dotenv").config()
 const mongoose = require('mongoose');
-const { mainRoute } = require("./App/mainRoutes")
+const { mainRoute } = require("./App/mainRoutes");
+const { adminModal } = require("./App/modal/admin/adminModal");
 const app=express()
 
 
@@ -12,10 +13,20 @@ app.use(mainRoute)
 app.use("/uploads/category", express.static("uploads/category"))
 app.use("/uploads/slider", express.static("uploads/slider"))
 app.use("/uploads/subCategory", express.static("uploads/subCategory"))
+app.use("/uploads/product", express.static("uploads/product"))
 
 
 mongoose.connect(`mongodb://127.0.0.1:27017/${process.env.DB_NAME}`)
-.then((res)=>{
+.then( async (res)=>{
     app.listen(process.env.SERVER_PORT)
     console.log(process.env.SERVER_PORT)
+    const admintable=await adminModal.find()
+    if(admintable.length==0){
+        let adminData=await adminModal({
+            adminEmail:process.env.ADMIN_EMAIL,
+            adminPassword:process.env.ADMIN_PASSWORD
+        })
+        await adminData.save()
+    }
+
 })

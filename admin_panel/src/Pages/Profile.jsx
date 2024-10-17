@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import Breadcrumb from "../common/Breadcrumb";
 
 export default function Profile() {
+  let [showPassword,setShowPassword]=useState(false)
   return (
     <>
     <Breadcrumb path={"Profile"} />
@@ -65,13 +66,6 @@ export default function Profile() {
                     >
                       Address
                     </label>
-                    {/* <input
-                      name="userPhone"
-                      type="tel"
-                      id="base-input3"
-                      className="text-[19px] border-2 shadow-sm border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 px-3 "
-                      placeholder="Enter your phone"
-                    /> */}
                     <textarea name="userAddress" id="base-input4" rows={4} className="resize-none text-[19px] border-2 shadow-sm border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 px-3 " placeholder="Enter your address"></textarea>
                   </div>
                   <br />
@@ -169,6 +163,7 @@ export default function Profile() {
                       </label>
                       <img
                         className="w-20 border-black border-2 shadow-md rounded-md"
+                        name="logoImage"
                         src="https://img.freepik.com/free-vector/bird-colorful-logo-gradient-vector_343694-1365.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1723766400&semt=ais_hybrid"
                         alt=""
                       />
@@ -182,20 +177,21 @@ export default function Profile() {
                       </label>
                       <img
                         className="w-20 border-black border-2 shadow-md rounded-md"
+                        name="subLogoImage"
                         src="https://img.freepik.com/free-vector/vortex-abstract-modern-logo_530521-889.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1723680000&semt=ais_hybrid"
                         alt=""
                       />
                     </div>
-                    <div className="mb-5">
+                    <div className="mb-5 relative">
                     <label
                         htmlFor="base-input"
                         className="block my-8 text-md font-medium text-gray-900"
                       >
                         Change Password
                       </label>
-                      <div className="grid gap-3 grid-cols-[80%_auto] items-baseline">
+                      <div className="grid grid-cols-1 relative">
                       <input
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         name="changePassword"
                         id="password"
                         autoComplete="on"
@@ -203,18 +199,60 @@ export default function Profile() {
                         placeholder="Change Password"
                         required
                       />
-                      <button type="submit" className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">Submit</button>
+                      <div className='z-[99999] absolute right-4 top-[35%]'>
+                    {showPassword ? 
+                    <svg
+                    onClick={()=>setShowPassword(false)}
+                    class="cursor-pointer w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M12 5c7 0 10 7 10 7s-3 7-10 7-10-7-10-7 3-7 10-7z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  :
+                  <svg
+                  onClick={()=>setShowPassword(true)}
+                    class="cursor-pointer w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M12 5c7 0 10 7 10 7s-3 7-10 7-10-7-10-7 3-7 10-7z"></path>
+                    <path
+                      d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"
+                      fill="none"
+                    ></path>
+                    <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
+                    <line
+                      x1="2"
+                      y1="2"
+                      x2="22"
+                      y2="22"
+                      stroke="currentColor"
+                    ></line>
+                  </svg>
+                  }
+                </div>
                       </div>
                     </div>
                   </div>
                   </div>
                   <div className="pt-16 flex items-center justify-start flex-col">
                     <figure>
-                        <img className="rounded-full w-40 h-40 border-2 object-cover shadow-lg" src="https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="" />
+                        <img name="profileImage" className="rounded-full w-40 h-40 border-2 object-cover shadow-lg" src="https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500" alt="" />
                     </figure>
                     <h5 className="mt-3 text-[20px]">Profile Image</h5>
                   </div>
                 </div>
+                <button type="submit" className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 my-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">Save Profile</button>
               </form>
             </div>
           </div>

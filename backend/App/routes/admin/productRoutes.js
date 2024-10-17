@@ -5,6 +5,8 @@ const {
   categoryView,
   subcategoryView,
   productInsert,
+  productView,
+  productSingleDelete,
 } = require("../../controller/admin/productController");
 const { uploads } = require("../../middleware/fileUploadation")
 
@@ -28,8 +30,10 @@ productRoute.post(
   ]),
   productInsert
 );
+productRoute.get("/product-view",productView)
 productRoute.get("/parentcategory-view", categoryView);
 productRoute.get("/size-view", sizeView);
 productRoute.get("/color-view", colorView);
 productRoute.get("/subcategory-view/:pid", subcategoryView);
+productRoute.delete("/delete/:id",productSingleDelete)
 module.exports = { productRoute };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Breadcrumb from '../../common/Breadcrumb'
-import axios, { all } from 'axios'
+import axios from 'axios'
 import { AdminBaseURL } from '../../config/config'
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { Link } from 'react-router-dom';
@@ -159,17 +159,17 @@ export default function SliderView() {
       viewSlider()
     }
     useEffect(()=>{
-        viewSlider()
+      viewSlider()
     },[])
+    useEffect(()=>{
+        viewSlider()
+    },[searchData])
+    useEffect(()=>{
+        viewSlider()
+    },[currentPage])
     useEffect(()=>{
         console.log(allCheckedId)
     },[allCheckedId])
-    useEffect(()=>{
-      viewSlider()
-    },[searchData])
-    useEffect(()=>{
-      viewSlider()
-    },[currentPage])
   return (
     <section className="w-full">
         <Breadcrumb path={"Slider"} path2={"Slider View"} slash={"/"} />
@@ -215,7 +215,7 @@ export default function SliderView() {
             </div>
             <div className="grid-cols-2">
               <button
-                type="button"
+                type="submit"
                 class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-3 text-center me-2 mb-2"
               >
                 Search
