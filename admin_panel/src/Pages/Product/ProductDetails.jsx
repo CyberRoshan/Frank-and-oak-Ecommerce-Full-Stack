@@ -3,9 +3,22 @@ import Breadcrumb from "../../common/Breadcrumb";
 import axios from "axios";
 import { AdminBaseURL } from "../../config/config";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2/dist/sweetalert2.js";
 
 export default function ProductDetails() {
+  let {id}=useParams()
+  let [controlledForm,setControlledForm]=useState({
+    productName:"",
+    productDescription:"",
+    productShortDesc:"",
+    productPrice:"",
+    productMRP:"",
+    productParentCategoryId:"",
+    productSizeId:"",
+    productColorId:"",
+    productStatus:1
+  })
   let [sizeData, setSizeData] = useState([]);
   let [colorData, setColorData] = useState([]);
   let [parentCatData, setParentCatData] = useState([]);
@@ -47,15 +60,103 @@ export default function ProductDetails() {
   let insertForm = (event) => {
     event.preventDefault();
     let formDataValue = new FormData(event.target);
-    axios
-      .post(AdminBaseURL + "/product/product-insert", formDataValue)
-      .then((res) => res.data)
-      .then((finalData) => {
-          toast.success(`${finalData.res.productName} product added.`);
-          setNavigatorStatus(true);
-          event.target.reset();
+    if(id!==undefined){
+      const swalWithBootstrapButtons = Swal.mixin({
+        buttonsStyling: true,
       });
+      swalWithBootstrapButtons
+        .fire({
+          title: "Are you sure?",
+          text: "You want to update the record.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, update it!",
+          cancelButtonText: "No, cancel!",
+          reverseButtons: true,
+          confirmButtonColor: "#F90101",
+          cancelButtonColor: "#0D0D0D",
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            axios.put(AdminBaseURL+`/product/updaterow/${id}`,formDataValue).then((res)=>{
+              if(res.data.status===1){
+                toast.success("Record Updated");
+                event.target.reset();
+                setNavigatorStatus(true);
+              }
+              else{
+                toast.error(`Unable to update record.`)
+              }
+            })
+          } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+          ) {
+            swalWithBootstrapButtons.fire({
+              title: "Cancelled",
+              text: "Record not Updated",
+              icon: "error",
+            });
+          }
+        });
+    }
+    else{
+      axios
+        .post(AdminBaseURL + "/product/product-insert", formDataValue)
+        .then((res) => res.data)
+        .then((finalData) => {
+            toast.success(`${finalData.res.productName} product added.`);
+            setNavigatorStatus(true);
+            event.target.reset();
+        });
+    }
   };
+
+  let getsetValue=(event)=>{
+    let oldData={...controlledForm}
+    oldData[event.target.name]=event.target.value
+    setControlledForm(oldData)
+  }
+  
+  useEffect(()=>{
+    setProductImgPreview("/assets/no-img.png")
+    setAnimationImgPreview("/assets/no-img.png")
+    setControlledForm({
+      productName:"",
+    productDescription:"",
+    productShortDesc:"",
+    productPrice:"",
+    productMRP:"",
+    productParentCategoryId:"",
+    productSizeId:"",
+    productColorId:"",
+    productStatus:1
+    })
+    axios.get(AdminBaseURL+`/product/editrow/${id}`)
+    .then((res)=>res.data)
+    .then((finalData)=>{
+      if(finalData.status){
+        setControlledForm({
+          productName:finalData.res.productName,
+    productDescription:finalData.res.productDescription,
+    productShortDesc:finalData.res.productShortDesc,
+    productPrice:finalData.res.productPrice,
+    productMRP:finalData.res.productMRP,
+    productParentCategoryId:finalData.res.productParentCategoryId,
+    productSizeId:finalData.res.productSizeId,
+    productColorId:finalData.res.productColorId,
+    productStatus:finalData.res.productStatus
+        })
+        setProductImgPreview(finalData.path+finalData.res.productImage)
+        setAnimationImgPreview(finalData.path+finalData.res.productAnimationImage)
+
+        let data=finalData.res.productGallery.map((items)=>finalData.path+items);
+
+        getSubCategory(finalData.res.productParentCategoryId)
+        setGalleryPreview(data)
+      }
+    })
+  },[id])
 
   let handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -70,7 +171,9 @@ export default function ProductDetails() {
       // console.log(Array.from(event.target.files))
       const selectedFiles = Array.from(event.target.files);
       if (selectedFiles.length <= 10) {
-        setGalleryPreview(selectedFiles);
+        let finalFile=selectedFiles.map((item)=>URL.createObjectURL(item))
+
+        setGalleryPreview(finalFile);
       } else {
         toast.error("Maximum limit reached! Please choose up to 10 images.");
       }
@@ -152,6 +255,8 @@ export default function ProductDetails() {
               <input
                 type="text"
                 name="productName"
+                onChange={getsetValue}
+                value={controlledForm.productName}
                 id="base-input"
                 className="text-[19px] border-2 shadow-sm border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 px-3 "
                 placeholder="Product Name"
@@ -166,6 +271,8 @@ export default function ProductDetails() {
               </label>
               <textarea
                 name="productDescription"
+                onChange={getsetValue}
+                value={controlledForm.productDescription}
                 id="message"
                 rows="3"
                 className=" resize-none block p-2.5 w-full text-sm text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 "
@@ -181,6 +288,8 @@ export default function ProductDetails() {
               </label>
               <textarea
                 name="productShortDesc"
+                onChange={getsetValue}
+                value={controlledForm.productShortDesc}
                 id="message"
                 rows="3"
                 className=" resize-none block p-2.5 w-full text-sm text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 "
@@ -276,6 +385,7 @@ export default function ProductDetails() {
   "
                   multiple
                 />
+             
               </div>
             </div>
             <div className="mb-5 flex flex-wrap gap-4">
@@ -283,7 +393,7 @@ export default function ProductDetails() {
                 galleryPreview.map((image, index) => (
                   <img
                     key={index}
-                    src={URL.createObjectURL(image)}
+                    src={image}
                     alt={`Preview ${index + 1}`}
                     className="object-scale-down h-24 rounded-md border  shadow-md   object-center w-24"
                   />
@@ -298,6 +408,8 @@ export default function ProductDetails() {
                   <input
                     type="tel"
                     name="productPrice"
+                    onChange={getsetValue}
+                    value={controlledForm.productPrice}
                     id="base-input"
                     className="text-[19px] border-2 shadow-sm border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 px-3 "
                     placeholder="Product Price"
@@ -310,6 +422,8 @@ export default function ProductDetails() {
                   <input
                     type="tel"
                     name="productMRP"
+                    onChange={getsetValue}
+                    value={controlledForm.productMRP}
                     id="base-input"
                     className="text-[19px] border-2 shadow-sm border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 px-3 "
                     placeholder="Product MRP"
@@ -328,7 +442,8 @@ export default function ProductDetails() {
               <select
                 id="default"
                 name="productParentCategoryId"
-                onChange={(event) => getSubCategory(event.target.value)}
+                onChange={(event) => {getSubCategory(event.target.value);  getsetValue(event)}}
+                value={controlledForm.productParentCategoryId}
                 className=" border-2 border-gray-300 text-gray-900 mb-6 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
               >
                 <option value="" disabled selected hidden>
@@ -362,7 +477,7 @@ export default function ProductDetails() {
                 </option>
                 {subCatData.map((item, index) => {
                   return (
-                    <option key={index} value={item._id}>
+                    <option selected key={index} value={item._id}>
                       {item.subCategoryName}
                     </option>
                   );
@@ -378,6 +493,8 @@ export default function ProductDetails() {
                   <select
                     id="default"
                     multiple
+                    onChange={getsetValue}
+                    value={controlledForm.productSizeId}
                     name="productSizeId[]"
                     className=" border-2 border-gray-300 text-gray-900 mb-6 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   >
@@ -400,6 +517,8 @@ export default function ProductDetails() {
                   <select
                     id="default"
                     multiple
+                    onChange={getsetValue}
+                    value={controlledForm.productColorId}
                     name="productColorId[]"
                     className=" border-2 border-gray-300 text-gray-900 mb-6 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                   >
@@ -422,9 +541,11 @@ export default function ProductDetails() {
                 Status :
                 <input
                   id="link-radio"
+                  onChange={getsetValue}
                   name="productStatus"
                   type="radio"
                   value={1}
+                  checked={controlledForm.productStatus==1 ? true : ""}
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 "
                 ></input>
                 Active
@@ -432,7 +553,9 @@ export default function ProductDetails() {
                   id="link-radio"
                   name="productStatus"
                   type="radio"
+                  onChange={getsetValue}
                   value={0}
+                  checked={controlledForm.productStatus==0 ? true : ""}
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 "
                 ></input>
                 Deactive
@@ -442,7 +565,7 @@ export default function ProductDetails() {
               type="submit"
               className="focus:outline-none my-10 text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
             >
-              Add Product
+              {id!==undefined ? "Update" : "Add"} Product
             </button>
           </form>
         </div>

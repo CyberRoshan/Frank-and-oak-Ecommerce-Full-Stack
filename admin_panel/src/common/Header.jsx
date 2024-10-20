@@ -1,7 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Toaster } from 'react-hot-toast'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 export default function Header() {
+    let adminData=useSelector(state=>state.adminReducer.adminInfo)
+    console.log(adminData)
+
+    let navigate=useNavigate()
+    useEffect(()=>{
+        if(adminData._id=="" || adminData._id==undefined){
+            navigate("/")
+        }
+    },[adminData])
   return (
     <header className='border-b-2'>
               <Toaster

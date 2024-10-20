@@ -29,6 +29,8 @@ import Orders from "./Pages/Orders/Orders.jsx";
 import SliderDetails from "./Pages/Slider/SliderDetails.jsx";
 import SliderView from "./Pages/Slider/SliderView.jsx";
 import RootLayout from "./layout/RootLayout.jsx";
+import { Provider } from "react-redux";
+import { store } from "./store.js";
 
 // const route=createBrowserRouter([
 //   {
@@ -136,11 +138,11 @@ const route = createBrowserRouter(
           <Route path="view-sub-category" element={<ViewSubCategory />}></Route>
         </Route>
         <Route path="product">
-          <Route path="product-details" element={<ProductDetails />}></Route>
+          <Route path="product-details/:id?" element={<ProductDetails />}></Route>
           <Route path="product-items" element={<ProductItems />}></Route>
         </Route>
         <Route path="story">
-          <Route path="story-details" element={<StoryDetails />}></Route>
+          <Route path="story-details/:id?" element={<StoryDetails />}></Route>
           <Route path="story-view" element={<StoryView />}></Route>
         </Route>
         <Route path="orders">
@@ -156,6 +158,8 @@ const route = createBrowserRouter(
 );
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={route}></RouterProvider>
+      <Provider store={store}>
+    <RouterProvider router={route}/>
+      </Provider>
   </StrictMode>
 );

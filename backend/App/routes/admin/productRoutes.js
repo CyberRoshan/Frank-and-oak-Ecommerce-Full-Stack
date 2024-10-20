@@ -7,6 +7,9 @@ const {
   productInsert,
   productView,
   productSingleDelete,
+  productMultipleDelete,
+  productEditRowData,
+  productUpdateRowData,
 } = require("../../controller/admin/productController");
 const { uploads } = require("../../middleware/fileUploadation")
 
@@ -36,4 +39,20 @@ productRoute.get("/size-view", sizeView);
 productRoute.get("/color-view", colorView);
 productRoute.get("/subcategory-view/:pid", subcategoryView);
 productRoute.delete("/delete/:id",productSingleDelete)
+productRoute.post("/multiple-delete",productMultipleDelete)
+productRoute.get("/editrow/:id",productEditRowData)
+productRoute.put("/updaterow/:id",uploads("uploads/product").fields([
+  {
+    name: "productImage",
+    maxCount: 1,
+  },
+  {
+    name: "productGallery",
+    maxCount: 10,
+  },
+  {
+    name: "productAnimationImage",
+    maxCount: 1,
+  },
+]),productUpdateRowData)
 module.exports = { productRoute };

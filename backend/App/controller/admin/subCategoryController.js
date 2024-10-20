@@ -157,7 +157,7 @@ let subCategoryEditRowData=async (req,res)=>{
       res:subCategoryData
     })
   }
-  res.status(404).json({
+  res.status(200).json({
     status:0,
     message:"No record found."
   })

@@ -3,10 +3,13 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AdminBaseURL } from '../../config/config'
 import toast, { Toaster } from 'react-hot-toast';
+import { useDispatch } from 'react-redux';
+import { adminDataStore } from '../../reducers/adminSlice';
 
 export default function Login() {
     let [loginRedirectStatus,setLoginRedirectStatus]=useState(false)
     let [showPassword,setShowPassword]=useState(false)
+    const dispatch=useDispatch()
     let handleLogin=(event)=>{
         event.preventDefault()
         let authData={
@@ -17,6 +20,7 @@ export default function Login() {
         .then((res)=>{
             if(res.data.status){
                 console.log(res.data)
+                dispatch(adminDataStore(res.data.data))
                 setLoginRedirectStatus(true)
             }
             else{

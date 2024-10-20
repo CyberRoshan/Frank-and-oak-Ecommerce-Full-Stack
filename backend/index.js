@@ -14,6 +14,7 @@ app.use("/uploads/category", express.static("uploads/category"))
 app.use("/uploads/slider", express.static("uploads/slider"))
 app.use("/uploads/subCategory", express.static("uploads/subCategory"))
 app.use("/uploads/product", express.static("uploads/product"))
+app.use("/uploads/story", express.static("uploads/story"))
 
 
 mongoose.connect(`mongodb://127.0.0.1:27017/${process.env.DB_NAME}`)
@@ -28,5 +29,4 @@ mongoose.connect(`mongodb://127.0.0.1:27017/${process.env.DB_NAME}`)
         })
         await adminData.save()
     }
-
 })

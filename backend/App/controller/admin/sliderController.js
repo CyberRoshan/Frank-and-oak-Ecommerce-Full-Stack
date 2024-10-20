@@ -132,7 +132,7 @@ let sliderEditRowData = async (req, res) => {
         res: sliderData,
       });
     }
-    res.status(404).json({
+    res.status(200).json({
       status: 0,
       message: "No record found.",
     });
@@ -170,7 +170,7 @@ let sliderUpdateRowData = async (req, res) => {
       res: sliderUpdate,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(200).json({
       status: 0,
       message: "Server error occurred.",
       error: error.message,
