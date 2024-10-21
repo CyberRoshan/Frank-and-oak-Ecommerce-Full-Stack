@@ -241,15 +241,15 @@ let productUpdateRowData=async(req,res)=>{
     productColorId:req.body.productColorId
   }
   if(req.files){
-    if (req.files.productImage[0].filename) {
-      insertData["productImage"] = req.files.productImage[0].filename;
+    if (req.files.productImage) {
+      productData["productImage"] = req.files.productImage[0].filename;
     }
-    if (req.files.productAnimationImage[0].filename) {
-      insertData["productAnimationImage"] =
+    if (req.files.productAnimationImage) {
+      productData["productAnimationImage"] =
         req.files.productAnimationImage[0].filename;
     }
     if (req.files.productGallery) {
-      insertData["productGallery"] = req.files.productGallery.map(
+      productData["productGallery"] = req.files.productGallery.map(
         (item) => item.filename
       );
     }

@@ -7,18 +7,18 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 
 export default function ProductDetails() {
-  let {id}=useParams()
-  let [controlledForm,setControlledForm]=useState({
-    productName:"",
-    productDescription:"",
-    productShortDesc:"",
-    productPrice:"",
-    productMRP:"",
-    productParentCategoryId:"",
-    productSizeId:"",
-    productColorId:"",
-    productStatus:1
-  })
+  let { id } = useParams();
+  let [controlledForm, setControlledForm] = useState({
+    productName: "",
+    productDescription: "",
+    productShortDesc: "",
+    productPrice: "",
+    productMRP: "",
+    productParentCategoryId: "",
+    productSizeId: "",
+    productColorId: "",
+    productStatus: 1,
+  });
   let [sizeData, setSizeData] = useState([]);
   let [colorData, setColorData] = useState([]);
   let [parentCatData, setParentCatData] = useState([]);
@@ -60,7 +60,7 @@ export default function ProductDetails() {
   let insertForm = (event) => {
     event.preventDefault();
     let formDataValue = new FormData(event.target);
-    if(id!==undefined){
+    if (id !== undefined) {
       const swalWithBootstrapButtons = Swal.mixin({
         buttonsStyling: true,
       });
@@ -78,16 +78,17 @@ export default function ProductDetails() {
         })
         .then((result) => {
           if (result.isConfirmed) {
-            axios.put(AdminBaseURL+`/product/updaterow/${id}`,formDataValue).then((res)=>{
-              if(res.data.status===1){
-                toast.success("Record Updated");
-                event.target.reset();
-                setNavigatorStatus(true);
-              }
-              else{
-                toast.error(`Unable to update record.`)
-              }
-            })
+            axios
+              .put(AdminBaseURL + `/product/updaterow/${id}`, formDataValue)
+              .then((res) => {
+                if (res.data.status === 1) {
+                  toast.success("Record Updated");
+                  event.target.reset();
+                  setNavigatorStatus(true);
+                } else {
+                  toast.error(`Unable to update record.`);
+                }
+              });
           } else if (
             /* Read more about handling dismissals below */
             result.dismiss === Swal.DismissReason.cancel
@@ -99,64 +100,68 @@ export default function ProductDetails() {
             });
           }
         });
-    }
-    else{
+    } else {
       axios
         .post(AdminBaseURL + "/product/product-insert", formDataValue)
         .then((res) => res.data)
         .then((finalData) => {
-            toast.success(`${finalData.res.productName} product added.`);
-            setNavigatorStatus(true);
-            event.target.reset();
+          toast.success(`${finalData.res.productName} product added.`);
+          setNavigatorStatus(true);
+          event.target.reset();
         });
     }
   };
 
-  let getsetValue=(event)=>{
-    let oldData={...controlledForm}
-    oldData[event.target.name]=event.target.value
-    setControlledForm(oldData)
-  }
-  
-  useEffect(()=>{
-    setProductImgPreview("/assets/no-img.png")
-    setAnimationImgPreview("/assets/no-img.png")
+  let getsetValue = (event) => {
+    let oldData = { ...controlledForm };
+    oldData[event.target.name] = event.target.value;
+    setControlledForm(oldData);
+  };
+
+  useEffect(() => {
+    setProductImgPreview("/assets/no-img.png");
+    setAnimationImgPreview("/assets/no-img.png");
     setControlledForm({
-      productName:"",
-    productDescription:"",
-    productShortDesc:"",
-    productPrice:"",
-    productMRP:"",
-    productParentCategoryId:"",
-    productSizeId:"",
-    productColorId:"",
-    productStatus:1
-    })
-    axios.get(AdminBaseURL+`/product/editrow/${id}`)
-    .then((res)=>res.data)
-    .then((finalData)=>{
-      if(finalData.status){
-        setControlledForm({
-          productName:finalData.res.productName,
-    productDescription:finalData.res.productDescription,
-    productShortDesc:finalData.res.productShortDesc,
-    productPrice:finalData.res.productPrice,
-    productMRP:finalData.res.productMRP,
-    productParentCategoryId:finalData.res.productParentCategoryId,
-    productSizeId:finalData.res.productSizeId,
-    productColorId:finalData.res.productColorId,
-    productStatus:finalData.res.productStatus
-        })
-        setProductImgPreview(finalData.path+finalData.res.productImage)
-        setAnimationImgPreview(finalData.path+finalData.res.productAnimationImage)
+      productName: "",
+      productDescription: "",
+      productShortDesc: "",
+      productPrice: "",
+      productMRP: "",
+      productParentCategoryId: "",
+      productSizeId: "",
+      productColorId: "",
+      productStatus: 1,
+    });
+    axios
+      .get(AdminBaseURL + `/product/editrow/${id}`)
+      .then((res) => res.data)
+      .then((finalData) => {
+        if (finalData.status) {
+          setControlledForm({
+            productName: finalData.res.productName,
+            productDescription: finalData.res.productDescription,
+            productShortDesc: finalData.res.productShortDesc,
+            productPrice: finalData.res.productPrice,
+            productMRP: finalData.res.productMRP,
+            productParentCategoryId: finalData.res.productParentCategoryId,
+            productSizeId: finalData.res.productSizeId,
+            productColorId: finalData.res.productColorId,
+            productStatus: finalData.res.productStatus,
+          });
+          setProductImgPreview(finalData.path + finalData.res.productImage);
+          setAnimationImgPreview(
+            finalData.path + finalData.res.productAnimationImage
+          );
 
-        let data=finalData.res.productGallery.map((items)=>finalData.path+items);
+          let data = finalData.res.productGallery.map(
+            (items) => finalData.path + items
+          );
 
-        getSubCategory(finalData.res.productParentCategoryId)
-        setGalleryPreview(data)
-      }
-    })
-  },[id])
+          getSubCategory(finalData.res.productParentCategoryId);
+          setGalleryPreview(data);
+        }
+      });
+  }, [id]);
 
   let handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -171,7 +176,7 @@ export default function ProductDetails() {
       // console.log(Array.from(event.target.files))
       const selectedFiles = Array.from(event.target.files);
       if (selectedFiles.length <= 10) {
-        let finalFile=selectedFiles.map((item)=>URL.createObjectURL(item))
+        let finalFile = selectedFiles.map((item) => URL.createObjectURL(item));
 
         setGalleryPreview(finalFile);
       } else {
@@ -385,7 +390,6 @@ export default function ProductDetails() {
   "
                   multiple
                 />
-             
               </div>
             </div>
             <div className="mb-5 flex flex-wrap gap-4">
@@ -442,7 +446,10 @@ export default function ProductDetails() {
               <select
                 id="default"
                 name="productParentCategoryId"
-                onChange={(event) => {getSubCategory(event.target.value);  getsetValue(event)}}
+                onChange={(event) => {
+                  getSubCategory(event.target.value);
+                  getsetValue(event);
+                }}
                 value={controlledForm.productParentCategoryId}
                 className=" border-2 border-gray-300 text-gray-900 mb-6 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
               >
@@ -545,7 +552,7 @@ export default function ProductDetails() {
                   name="productStatus"
                   type="radio"
                   value={1}
-                  checked={controlledForm.productStatus==1 ? true : ""}
+                  checked={controlledForm.productStatus == 1 ? true : ""}
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 "
                 ></input>
                 Active
@@ -555,7 +562,7 @@ export default function ProductDetails() {
                   type="radio"
                   onChange={getsetValue}
                   value={0}
-                  checked={controlledForm.productStatus==0 ? true : ""}
+                  checked={controlledForm.productStatus == 0 ? true : ""}
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 "
                 ></input>
                 Deactive
@@ -565,7 +572,7 @@ export default function ProductDetails() {
               type="submit"
               className="focus:outline-none my-10 text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
             >
-              {id!==undefined ? "Update" : "Add"} Product
+              {id !== undefined ? "Update" : "Add"} Product
             </button>
           </form>
         </div>
