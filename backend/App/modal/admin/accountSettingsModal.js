@@ -12,7 +12,6 @@ const accountSettingsSchema = new mongoose.Schema(
     xLink: String,
     logoImage: String,
     subLogoImage: String,
-    changePassword: String,
     profileImage: String,
   },
   { timestamps: true }

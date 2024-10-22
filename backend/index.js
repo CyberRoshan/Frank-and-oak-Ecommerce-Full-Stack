@@ -15,6 +15,7 @@ app.use("/uploads/slider", express.static("uploads/slider"))
 app.use("/uploads/subCategory", express.static("uploads/subCategory"))
 app.use("/uploads/product", express.static("uploads/product"))
 app.use("/uploads/story", express.static("uploads/story"))
+app.use("/uploads/profile", express.static("uploads/profile"))
 
 
 mongoose.connect(`mongodb://127.0.0.1:27017/${process.env.DB_NAME}`)
