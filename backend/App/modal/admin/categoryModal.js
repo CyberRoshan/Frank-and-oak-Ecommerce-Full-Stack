@@ -12,6 +12,7 @@ const categorySchema =new mongoose.Schema(
       type: Boolean,
       default: true
     },
+    slug:String,
   },
   { timestamps: true }
 );

@@ -11,10 +11,10 @@ export default function ForgetPassword() {
               Forget your password?
           </h1>
           <p class="font-normal text-gray-500 text-center">Don't fret! Just type in your email and we will send you a code to reset your password!</p>
-          <form class="mt-4 space-y-6 lg:mt-5 md:space-y-5" action="#">
+          <form class="mt-4 space-y-6 lg:mt-5 md:space-y-5">
               <div>
                   <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Your email</label>
-                  <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="name@company.com" required=""/>
+                  <input type="email" name="userEmail" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="name@company.com" required=""/>
               </div>
               <div class="flex items-start">
                   <div class="flex items-center h-5">

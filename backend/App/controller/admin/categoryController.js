@@ -1,5 +1,7 @@
 const { status } = require("express/lib/response");
+
 const { categoryModel } = require("../../modal/admin/categoryModal");
+const { myslug } = require("../../config/slugConfig");
 fs = require("fs");
 let categoryInsert = async (req, res) => {
   let { categoryName, categoryDescription, categoryStatus } = req.body;
@@ -7,6 +9,7 @@ let categoryInsert = async (req, res) => {
     categoryName: categoryName,
     categoryDescription: categoryDescription,
     categoryStatus: categoryStatus,
+    slug:myslug(categoryName)
   };
   if (req.file) {
     if (req.file.filename) {
@@ -154,6 +157,7 @@ let updateRowData = async (req, res) => {
     categoryName: categoryName,
     categoryDescription: categoryDescription,
     categoryStatus: categoryStatus,
+    slug:myslug(categoryName)
   };
   if (req.file) {
     if (req.file.filename) {
